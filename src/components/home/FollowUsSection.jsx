@@ -2,6 +2,7 @@ import InfoIconCircle from "../InfoIconCircle";
 
 const socialLinks = [
   {
+    href: "https://www.instagram.com/thebalidreamvilla",
     icon: (
       <svg
         width="14"
@@ -20,6 +21,7 @@ const socialLinks = [
     ),
   },
   {
+    href: "https://www.facebook.com/thebalidreamvilla",
     icon: (
       <svg
         width="14"
@@ -36,24 +38,7 @@ const socialLinks = [
     ),
   },
   {
-    icon: (
-      <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
-        <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
-      </svg>
-    ),
-  },
-  {
-    href: "https://thebalidreamvilla.com/",
+    href: "https://thebalidreamvilla.com",
     icon: (
       <svg
         width="14"
@@ -70,6 +55,19 @@ const socialLinks = [
       </svg>
     ),
   },
+  {
+    href: "http://wa.me/6287806514620",
+    icon: (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M20.52 3.48A11.78 11.78 0 0 0 12.01 0C5.38 0 .02 5.36.02 11.99c0 2.11.55 4.17 1.6 5.99L0 24l6.19-1.62a11.9 11.9 0 0 0 5.82 1.48h.01c6.63 0 12-5.36 12-11.99 0-3.2-1.25-6.2-3.5-8.39zM12 21.5c-1.8 0-3.56-.48-5.1-1.38l-.36-.21-3.67.96.98-3.58-.23-.37a9.4 9.4 0 0 1-1.45-5c0-5.2 4.23-9.43 9.44-9.43 2.52 0 4.89.98 6.67 2.76a9.38 9.38 0 0 1 2.77 6.67c0 5.2-4.24 9.44-9.45 9.44zm5.17-7.12c-.28-.14-1.66-.82-1.92-.91-.26-.1-.45-.14-.64.14-.19.28-.73.91-.9 1.1-.16.19-.33.21-.61.07-.28-.14-1.17-.43-2.22-1.36-.82-.73-1.37-1.63-1.53-1.91-.16-.28-.02-.43.12-.57.13-.13.28-.33.42-.5.14-.17.19-.28.28-.47.09-.19.05-.35-.02-.5-.07-.14-.64-1.54-.88-2.12-.23-.55-.47-.47-.64-.48h-.55c-.19 0-.5.07-.76.35s-1 1-.96 2.43c.05 1.43 1.02 2.81 1.16 3 .14.19 2 3.05 4.85 4.27.68.29 1.21.46 1.62.59.68.22 1.3.19 1.79.12.55-.08 1.66-.68 1.9-1.34.23-.66.23-1.23.16-1.34-.07-.12-.26-.19-.54-.33z" />
+  </svg>
+  )
+  }
 ];
 
 export default function FollowUsSection({ labelStyle, visible }) {
@@ -81,6 +79,8 @@ export default function FollowUsSection({ labelStyle, visible }) {
           <a
             key={i}
             href={href}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-[12px]"
           >
             <InfoIconCircle>{icon}</InfoIconCircle>

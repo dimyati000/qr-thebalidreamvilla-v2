@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import villaImg1 from "../assets/view-1.jpeg";
-import villaImg2 from "../assets/view-2.jpeg";
+import villaImg1 from "../assets/villa/villa-1.jpg";
+import villaImg2 from "../assets/villa/villa-2.jpg";
 import logo from "../assets/logo.png";
 import ServicesSection from "../components/home/ServicesSection";
 import PromotionsSection from "../components/home/PromotionsSection";
@@ -49,22 +49,25 @@ export default function Home() {
 >
 
   {/* HERO */}
-   <div className="relative h-[260px] md:h-full w-full overflow-hidden">
-        {villa.map((img, index) => (
-          <img
-            key={index}
-            src={img}
-            alt=""
-            className={`
-              absolute top-0 left-0 w-full h-full object-cover brightness-75
-              transition-opacity duration-1000
-              ${index === currentIndex ? "opacity-100" : "opacity-0"}
-            `}
-          />
-        ))}
-          {/* overlay */}
+  <div className="relative h-[260px] md:h-[100vh] lg:h-[100vh] w-full overflow-hidden">
+  {/* <div className="relative h-[60vh] md:h-[100vh] w-full overflow-hidden flex items-start md:items-center pt-[5vh] md:pt-0"></div>
+   <div className="relative h-[260px] md:h-full w-full overflow-hidden"> */}
+  {villa.map((img, index) => (
+    <img
+      key={index}
+      src={img}
+      alt=""
+      className={`
+        absolute top-0 left-0 w-full h-full object-cover brightness-75
+        transition-opacity duration-1000
+        ${index === currentIndex ? "opacity-100" : "opacity-0"}
+      `}
+    />
+  ))}
+
+  {/* overlay */}
   <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-transparent" />
-  </div>
+</div>
 
    {/* LOGO */}
       <div className="absolute inset-0 flex items-start justify-center pt-12 md:pt-16 xl:pt-20 2xl:pt-24">          <img
@@ -84,7 +87,7 @@ export default function Home() {
       
 
   {/* BOTTOM SHEET */}
-  <div
+   <div
     className={`relative -mt-16 md:-mt-40 xl:-mt-70 2xl:-mt-80 z-10 rounded-t-[26px]
 
     bg-gradient-to-b 
@@ -93,7 +96,6 @@ export default function Home() {
     to-[rgba(18,10,4,0.9)]
 
     backdrop-blur-xl
-    border border-[rgba(255,240,210,0.12)]
 
     px-5 md:px-8 xl:px-14 2xl:px-16 
     pt-6 md:pt-10 xl:pt-14 2xl:pt-16 
