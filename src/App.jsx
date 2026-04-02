@@ -1,11 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import GalleryPage from "./pages/GalleryPage";
-import spa1 from "./assets/spa/spa-1.webp";
-import spa2 from "./assets/spa/spa-2.webp";
-import spa3 from "./assets/spa/spa-3.webp";
-import spa4 from "./assets/spa/spa-4.webp";
-import spa5 from "./assets/spa/spa-5.webp";
+import Compendium from "./pages/galleries/Compendium";
+import Facilities from "./pages/galleries/Facilities";
+import Food from "./pages/galleries/Food";
+import Rules from "./pages/galleries/Rules";
+import Spa from "./pages/galleries/Spa";
+import Canggu from "./pages/promotions/canggu";
+
+import PromotionPage from "./pages/PromotionPage";
 import canggu1 from "./assets/promotions/canggu.jpg";
 import seminyak1 from "./assets/promotions/seminyak.jpg";
 import suite1 from "./assets/promotions/suite.jpg";
@@ -16,20 +19,17 @@ function App() {
       <div className="w-full bg-stone-50 min-h-screen">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route
-            path="/spa"
-            element={
-              <GalleryPage
-                title="Spa"
-                images={[spa1, spa2, spa3, spa4, spa5]}
-              />
-            }
-          />
-
+          <Route path="/compendium" element={<Compendium />} />
+          <Route path="/facilities" element={<Facilities />} />
+          <Route path="/food" element={<Food />} />
+          <Route path="/rules" element={<Rules />} />
+          <Route path="/spa" element={<Spa />} />
+          <Route path="/canggu" element={<Canggu />} />
+{/* 
           <Route
             path="/canggu"
             element={<GalleryPage title="Canggu" images={[canggu1]} />}
-          />
+          /> */}
 
           <Route
             path="/seminyak"

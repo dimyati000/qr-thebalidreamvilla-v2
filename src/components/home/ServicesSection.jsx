@@ -8,16 +8,16 @@ import ServiceCard from "../services/ServiceCard";
 
 const services = [
   { name: "GUEST EXPERIENCE", subtitle: "Hotel information and guest services", Icon: BookIcon, 
-    // path: "/compendium" 
+    path: "/compendium" 
   },
   { name: "RESORT GUIDELINES", subtitle: "Essential policies for refined stays", Icon: ScrollIcon,
-    // path: "/rules"
+    path: "/rules"
   },
   { name: "LEISURE & ENTERTAINMENT", subtitle: "Curated activities and experiences", Icon: FacilitiesIcon,
-    //  path: "/facilities", 
+     path: "/facilities", 
   },
   { name: "IN-ROOM DINING", subtitle: "Tailored food & beverage", Icon: RoomServiceIcon,
-    //  path: "/room-service"
+     path: "/food"
   },
   { name: "SPA & WELLNESS", subtitle: "Signature and relaxation treatments", Icon: SpaIcon,
   path: "/spa"
@@ -57,12 +57,7 @@ export default function ServicesSection({
             Icon={service.Icon}
             isVisible={true}
             delayClass={`s${i}`}
-            // onClick={() => navigate(service.path)}
-            onClick={() => {
-              if (service.path) {
-                navigate(service.path);
-              }
-            }}
+            onClick={() => navigate(service.path)}
           />
         ))}
       </div>
