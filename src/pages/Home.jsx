@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import villaImg1 from "../assets/villa/villa-1.jpg";
-import villaImg2 from "../assets/villa/villa-2.jpg";
+import villaImg1 from "../assets/villa/villa-1.webp";
+import villaImg2 from "../assets/villa/villa-2.webp";
 import logo from "../assets/logo.png";
 import ServicesSection from "../components/home/ServicesSection";
 import PromotionsSection from "../components/home/PromotionsSection";
