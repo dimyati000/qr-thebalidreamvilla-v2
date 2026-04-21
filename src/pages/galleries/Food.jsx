@@ -21,54 +21,60 @@ export default function Compendium() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden font-cormorant">
-
-      {/* BACKGROUND SLIDER */}
-      {images.map((img, i) => (
-        <img
-          key={i}
-          src={img}
-          alt=""
-          className={`
-            absolute inset-0 w-full h-full object-cover
-            transition-opacity duration-1000
-            ${i === index ? "opacity-100" : "opacity-0"}
-          `}
-        />
-      ))}
-
-      {/* BLUR + DARK OVERLAY */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
-      {/* GRADIENT */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-[#342818]" />
-
-      {/* NAVBAR */}
-      <div className="relative z-10 flex items-center gap-3 p-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition"
-        >
-          <BackIcon />
-        </button>
-
-        <h1 className="text-white text-xl tracking-wide">
+        <div className="relative min-h-screen w-full overflow-hidden font-cormorant bg-black">
+    
+          {/* 1. BACKGROUND SLIDER (Layer paling bawah) */}
+          <div className="absolute inset-0 z-0">
+            {images.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt=""
+                className={`
+                  absolute inset-0 w-full h-full object-cover
+                  transition-opacity duration-1000
+                  ${i === index ? "opacity-100" : "opacity-0"}
+                `}
+              />
+            ))}
+          </div>
+    
+          {/* 2. OVERLAY (Layer tengah) */}
+          {/* Kita gabung blur dan gradient di sini agar tidak bertumpuk terlalu banyak */}
+          <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-gradient-to-b from-black/20 via-transparent to-[#342818]" />
+    
+          {/* 3. WRAPPER CONTENT (Layer paling atas) */}
+          {/* Gunakan z-20 untuk memastikan ini di atas overlay */}
+          <div className="relative z-20 flex flex-col min-h-screen">
+            
+            {/* NAVBAR */}
+            <div className="flex items-center gap-3 p-6">
+              <button
+                onClick={() => navigate(-1)}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 border border-white/40 text-white hover:bg-white/30 transition backdrop-blur-md"
+              >
+                <BackIcon />
+              </button>
+    
+              <h1 className="text-white text-xl tracking-[0.2em] font-medium drop-shadow-lg">
           IN-ROOM DINING
-        </h1>
-      </div>
-
-      {/* CONTENT (Coming Soon) */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center min-h-[80vh] px-6">
-        
-        <h2 className="text-white text-3xl md:text-4xl mb-4">
-          Coming Soon
-        </h2>
-
-        <p className="text-[#f8ebd2] opacity-80">
-          For inquiries, please contact us at 0.
-        </p>
-
-      </div>
-    </div>
-  );
+              </h1>
+            </div>
+    
+            {/* CONTENT (Coming Soon) */}
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+              {/* Judul dengan Gradient Kuning Emas */}
+              <h2 className="!text-white/80 max-w-xs leading-relaxed tracking-wide drop-shadow-md">
+                Coming Soon
+              </h2>
+    
+              {/* Deskripsi dipaksa Putih dengan !important */}
+              <p className="!text-white/80 max-w-xs leading-relaxed tracking-wide drop-shadow-md">
+                For inquiries, please contact us at <span className="font-bold">0</span>.
+              </p>
+            </div>
+          </div>
+    
+        </div>
+      );
 }

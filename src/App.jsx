@@ -7,6 +7,8 @@ import Food from "./pages/galleries/Food";
 import Rules from "./pages/galleries/Rules";
 import Spa from "./pages/galleries/Spa";
 import Canggu from "./pages/promotions/canggu";
+import Seminyak from "./pages/promotions/seminyak";
+import Suite from "./pages/promotions/suite";
 
 import PromotionPage from "./pages/PromotionPage";
 import canggu1 from "./assets/promotions/canggu.jpg";
@@ -25,11 +27,12 @@ function App() {
           <Route path="/rules" element={<Rules />} />
           <Route path="/spa" element={<Spa />} />
           <Route path="/canggu" element={<Canggu />} />
-{/* 
-          <Route
+          <Route path="/seminyak" element={<Seminyak />} />
+          <Route path="/suite" element={<Suite />} />
+{/*       <Route
             path="/canggu"
             element={<GalleryPage title="Canggu" images={[canggu1]} />}
-          /> */}
+          /> 
 
           <Route
             path="/seminyak"
@@ -39,8 +42,8 @@ function App() {
           <Route
             path="/suite"
             element={<GalleryPage title="Suite" images={[suite1]} />}
-          />
-        </Routes>
+          />*/}
+        </Routes> 
       </div>
     </BrowserRouter>
   );
