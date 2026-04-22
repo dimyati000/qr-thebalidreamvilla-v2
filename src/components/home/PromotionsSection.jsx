@@ -1,21 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import canggu from "../../assets/promotions/canggu.jpg";
-import seminyak from "../../assets/promotions/seminyak.jpg";
-import suite from "../../assets/promotions/suite.jpg";
+import canggu from "../../assets/promotions/canggu.png";
+import seminyak from "../../assets/promotions/seminyak.png";
+import suite from "../../assets/promotions/suite.png";
 
 const promosData = [
   {
-    tag: "Canggu",
+    // tag: "Canggu",
     image: canggu,
     path: "/canggu",
   },
   {
-    tag: "Seminyak",
+    // tag: "Seminyak",
     image: seminyak,
     path: "/seminyak",
   },
   {
-    tag: "Suite",
+    // tag: "Suite",
     image: suite,
     path: "/suite",
   },

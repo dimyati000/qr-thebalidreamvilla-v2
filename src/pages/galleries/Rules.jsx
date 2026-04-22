@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import BackIcon from "../../components/icons/BackIcon";
 
-import villa1 from "../../assets/villa/villa-1.jpg";
-import villa2 from "../../assets/villa/villa-2.jpg";
+import villa1 from "../../assets/villa/villa-1.webp";
+import villa2 from "../../assets/villa/villa-2.webp";
 
 const images = [villa1, villa2];
 

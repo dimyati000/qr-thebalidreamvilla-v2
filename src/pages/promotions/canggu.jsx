@@ -1,10 +1,10 @@
 import PromotionPage from "../PromotionPage";
-import canggu from "../../assets/promotions/canggu.jpg";
+import canggu from "../../assets/promotions/canggu.png";
 
 export default function Canggu() {
   return (
     <PromotionPage
-      title="Canggu"
+      // title="Canggu"
       images={[canggu]}
     />
   );

@@ -6,14 +6,14 @@ import Facilities from "./pages/galleries/Facilities";
 import Food from "./pages/galleries/Food";
 import Rules from "./pages/galleries/Rules";
 import Spa from "./pages/galleries/Spa";
+import PromotionPage from "./pages/PromotionPage";
 import Canggu from "./pages/promotions/canggu";
 import Seminyak from "./pages/promotions/seminyak";
 import Suite from "./pages/promotions/suite";
 
-import PromotionPage from "./pages/PromotionPage";
-import canggu1 from "./assets/promotions/canggu.jpg";
-import seminyak1 from "./assets/promotions/seminyak.jpg";
-import suite1 from "./assets/promotions/suite.jpg";
+// import canggu1 from "./assets/promotions/canggu.jpg";
+// import seminyak1 from "./assets/promotions/seminyak.jpg";
+// import suite1 from "./assets/promotions/suite.jpg";
 
 function App() {
   return (
