@@ -183,7 +183,7 @@ h3 {
 h1 {
   font-size: 42px;
   letter-spacing: 2px;
-  margin-bottom: 16px;
+  margin-bottom: 13px;
   animation: fadeInUp 0.8s ease-out;
   background: linear-gradient(135deg, #6b5344 0%, #d4af37 100%);
   -webkit-background-clip: text;
@@ -196,10 +196,10 @@ h1 {
 
 h2 {
   font-size: 28px;
+  letter-spacing: 1px;
   line-height: 130%;
   margin-bottom: 12px;
   font-weight: 700;
-  letter-spacing: 1px;
   animation: slideInLeft 0.8s ease-out;
   @media (max-width: 1024px) {
     font-size: 24px;
@@ -208,8 +208,17 @@ h2 {
 
 h3 {
   font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  /* font-weight: 600; */
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+  animation: fadeInUp 0.8s ease-out;
+  background: linear-gradient(135deg, #6b5344 0%, #d4af37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  @media (max-width: 1024px) {
+    font-size: 32px;
+  }
 }
 
 p {

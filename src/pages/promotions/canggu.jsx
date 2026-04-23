@@ -4,7 +4,7 @@ import canggu from "../../assets/promotions/canggu.png";
 export default function Canggu() {
   return (
     <PromotionPage
-      // title="Canggu"
+      title="Back"
       images={[canggu]}
     />
   );

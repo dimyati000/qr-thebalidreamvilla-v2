@@ -39,14 +39,14 @@ export default function PromotionPage({ title, images = [] }) {
       tracking-[0.8px] leading-tight font-medium
     "
   > */}
-        <h1
+        <h3
           className="
-    text-white text-[13px] md:text-[14px]
-    tracking-[0.8px] leading-none font-medium
+    text-white text-[8px] md:text-[px]
+    tracking-[0.8px] leading-none
   "
         >
           {title}
-        </h1>
+        </h3>
       </div>
 
       {/* GALLERY */}

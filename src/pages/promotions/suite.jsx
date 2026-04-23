@@ -4,7 +4,7 @@ import suite from "../../assets/promotions/suite.png";
 export default function Canggu() {
   return (
     <PromotionPage
-      // title="Suite"
+      title="Back"
       images={[suite]}
     />
   );
