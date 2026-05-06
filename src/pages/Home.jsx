@@ -70,7 +70,8 @@ export default function Home() {
 </div>
 
    {/* LOGO */}
-      <div className="absolute inset-0 flex items-start justify-center pt-12 md:pt-16 xl:pt-20 2xl:pt-24">          <img
+      <div className="absolute inset-0 flex items-start justify-center pt-12 md:pt-16 xl:pt-20 2xl:pt-24">
+        <img
             src={logo}
             alt="The Bali Dream Villa"
             className="
