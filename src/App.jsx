@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import GalleryPage from "./pages/GalleryPage";
 import Compendium from "./pages/galleries/Compendium";
+import CompendiumSeminyak from "./pages/galleries/CompendiumSeminyak";
+import CompendiumSuite from "./pages/galleries/CompendiumSuite";
+import CompendiumCanggu from "./pages/galleries/CompendiumCanggu";
 import Facilities from "./pages/galleries/Facilities";
 import Food from "./pages/galleries/Food";
 import Rules from "./pages/galleries/Rules";
@@ -21,6 +24,9 @@ function App() {
       <div className="w-full bg-stone-50 min-h-screen">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/compendium-seminyak" element={<CompendiumSeminyak />} />
+          <Route path="/compendium-suite" element={<CompendiumSuite />} />
+          <Route path="/compendium-canggu" element={<CompendiumCanggu />} />
           <Route path="/compendium" element={<Compendium />} />
           <Route path="/facilities" element={<Facilities />} />
           <Route path="/food" element={<Food />} />

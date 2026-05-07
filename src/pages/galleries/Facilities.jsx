@@ -48,7 +48,7 @@ export default function Compendium() {
         <div className="relative z-20 flex flex-col min-h-screen">
           
           {/* NAVBAR */}
-          <div className="flex items-center gap-3 p-6">
+          <div className="flex items-center gap-3 pl-4">
             <button
               onClick={() => navigate(-1)}
               className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 border border-white/40 text-white hover:bg-white/30 transition backdrop-blur-md"
