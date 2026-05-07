@@ -72,44 +72,47 @@ export default function Compendium() {
             Guest Experience
           </h1>
         </div>
+        {/* CONTENT - RESPONSIVE GRID (3 Bawah di Mobile, 3 Sejajar di Laptop) */}
+            <div className="flex-1 px-4 pb-10 flex flex-col justify-center items-center">
+              <div className="p-[18px] pt-[20px] px-[16px] 
+flex flex-col items-center text-center 
+gap-[12px]
+bg-white/5 backdrop-blur-md
+border border-white/10
+rounded-xl">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {services.map((service, i) => (
+                    <div
+                      key={i}
+                      className={`
+                        p-6 flex flex-col items-center justify-center text-center gap-4 rounded-lg bg-white/5 border border-white/10 
+            
+                        /* Animasi Muncul */
+            transition-all duration-500 transform cursor-pointer
+            
+ /* HOVER HANYA DI CARD INI */
+            hover:bg-white/10 hover:border-white/20 hover:scale-[1.03]
+            active:scale-95
+                                    ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+                      `}
+                      style={{ 
+                        transitionDelay: `${i * 150}ms`,
+                        minHeight: "160px" 
+                      }}
+                    >
+    
 
-       {/* CONTENT - GRID 3 KOLOM */}
-<div className="flex-1 px-4 pb-10">
-  <div className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 mt-4">
-    <div className="grid grid-cols-3 gap-2">
-      {services.map((service, i) => (
-        <div
-          key={i}
-          className={`
-            p-3 flex flex-col items-center text-center gap-3 rounded-lg bg-white/5 border border-white/10 
-            transition-all duration-700 transform cursor-pointer
-            hover:bg-white/10 active:scale-95
-            ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
-          `}
-          style={{ 
-            transitionDelay: `${i * 100}ms`,
-            minHeight: "120px" // Memberikan kesan persegi panjang vertikal/proporsional
-          }}
-        >
-          {/* ICON WRAP */}
-          <div className="w-9 h-9 rounded-full bg-[#fff0d21a] border border-[#fff0d229] flex items-center justify-center text-[#dab891ec] shrink-0">
-            <service.Icon size={18} />
-          </div>
-
-          {/* TEXT */}
-          <div className="flex flex-col items-center">
-            <p className="font-jost text-[11px] font-medium text-[#faf2e4f7] tracking-tight mb-1 leading-tight">
-              {service.name}
-            </p>
-            <p className="font-jost text-[9px] font-light text-[#c6a87dd1] tracking-wide leading-tight">
-              {service.subtitle}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
+                      {/* TEXT */}
+                      <div className="flex flex-col items-center">
+                        <p className="svc-card-name">
+                          {service.name}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
         {/* OPTIONAL FOOTER */}
         <div className="p-6 text-center">
