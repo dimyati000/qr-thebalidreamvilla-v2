@@ -41,7 +41,7 @@ export default function Compendium() {
   
         {/* 2. OVERLAY (Layer tengah) */}
         {/* Kita gabung blur dan gradient di sini agar tidak bertumpuk terlalu banyak */}
-        <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-gradient-to-b from-black/20 via-transparent to-[#342818]" />
+        <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-linear-to-b from-black/20 via-transparent to-[#342818]" />
   
         {/* 3. WRAPPER CONTENT (Layer paling atas) */}
         {/* Gunakan z-20 untuk memastikan ini di atas overlay */}
@@ -64,12 +64,12 @@ export default function Compendium() {
           {/* CONTENT (Coming Soon) */}
           <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
             {/* Judul dengan Gradient Kuning Emas */}
-            <h2 className="!text-white/80 max-w-xs leading-relaxed tracking-wide drop-shadow-md">
+            <h2 className="text-white/80! max-w-xs leading-relaxed tracking-wide drop-shadow-md">
               Coming Soon
             </h2>
   
             {/* Deskripsi dipaksa Putih dengan !important */}
-            <p className="!text-white/80 max-w-xs leading-relaxed tracking-wide drop-shadow-md">
+            <p className="text-white/80! max-w-xs leading-relaxed tracking-wide drop-shadow-md">
               For inquiries, please contact us at <span className="font-bold">0</span>.
             </p>
           </div>

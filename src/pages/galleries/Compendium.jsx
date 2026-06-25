@@ -63,7 +63,7 @@ export default function Compendium() {
         ))}
       </div>
 
-      <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-gradient-to-b from-black/20 via-transparent to-[#1c140a]" />
+      <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-linear-to-b from-black/20 via-transparent to-[#1c140a]" />
 
       <div className="relative z-20 flex flex-col min-h-screen">
         <div className="flex items-center gap-3 pl-4 pt-4">

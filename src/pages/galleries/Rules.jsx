@@ -65,7 +65,7 @@ export default function Compendium() {
       </div>
 
       {/* 2. OVERLAY */}
-      <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-gradient-to-b from-black/20 via-transparent to-[#1c140a]" />
+      <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-linear-to-b from-black/20 via-transparent to-[#1c140a]" />
 
       {/* 3. WRAPPER CONTENT */}
       <div className="relative z-20 flex flex-col min-h-screen">
@@ -127,7 +127,7 @@ export default function Compendium() {
                       <div 
                         className={`
                           overflow-hidden transition-all duration-500 ease-in-out
-                          ${isExpanded ? "max-h-[1000px] opacity-100 mt-4" : "max-h-0 opacity-0"}
+                          ${isExpanded ? "max-h-250 opacity-100 mt-4" : "max-h-0 opacity-0"}
                         `}
                       >
                         <img 

@@ -47,7 +47,7 @@ export default function Compendiums() {
       </div>
 
       {/* 2. OVERLAY */}
-      <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-gradient-to-b from-black/20 via-transparent to-[#1c140a]" />
+      <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] bg-linear-to-b from-black/20 via-transparent to-[#1c140a]" />
 
       {/* 3. WRAPPER CONTENT */}
       <div className="relative z-20 flex flex-col min-h-screen">
@@ -67,9 +67,9 @@ export default function Compendiums() {
 
         {/* CONTENT */}
         <div className="flex-1 px-4 pb-10 flex flex-col justify-center items-center">
-          <div className="p-[18px] pt-[20px] px-[16px]
+          <div className="p-4.5 pt-5 px-4
           flex flex-col items-center text-center
-          gap-[12px]
+          gap-3
           bg-white/5 backdrop-blur-md
           border border-white/10 
           rounded-xl">
