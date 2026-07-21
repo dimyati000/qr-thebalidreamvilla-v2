@@ -437,7 +437,6 @@ a {
   scrollbar-width: none;
   -ms-overflow-style: none;
   overscroll-behavior-x: contain;
-
 }
 
 .promotions-slider::-webkit-scrollbar {
