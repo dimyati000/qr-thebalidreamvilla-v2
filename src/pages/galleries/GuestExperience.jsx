@@ -107,6 +107,9 @@ const services = [
   },
 ];
 
+const AUTO_SCROLL_DELAY = 5000;
+const AUTO_SCROLL_SPEED = 65;
+
 export default function Compendium() {
   const navigate = useNavigate();
 
