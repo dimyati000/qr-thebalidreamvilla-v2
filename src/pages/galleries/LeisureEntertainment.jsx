@@ -19,7 +19,7 @@ const LeisureEntertainmentImages = [
 export default function LeisureEntertainment() {
   return (
     <GalleryPage
-      title="SPA & WELLNESS"
+      title="LEISURE & ENTERTAINMENT"
       images={LeisureEntertainmentImages}
     />
   );
