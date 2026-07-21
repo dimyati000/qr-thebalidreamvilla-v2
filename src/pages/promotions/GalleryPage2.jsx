@@ -9,21 +9,11 @@ import { useNavigate } from "react-router-dom";
 
 import BackIcon from "../components/icons/BackIcon";
 
-const DESKTOP_VISIBLE_IMAGES = 3;
+const VISIBLE_IMAGES = 3;
 const IMAGE_GAP = 2;
-
-/* Menunggu 5 detik sebelum berpindah */
 const AUTO_SLIDE_DELAY = 5000;
-
-/* Lama animasi pergeseran */
-const SLIDE_DURATION = 1000;
-
-/* Minimal drag 30px untuk pindah gambar */
 const SWIPE_THRESHOLD = 30;
-
-/* Ukuran asli gambar: 1414 × 2000 */
-const IMAGE_ASPECT_RATIO = "1414 / 2000";
-
+const SLIDE_DURATION = 1000;
 export default function GalleryPage({
   title,
   images = [],
@@ -63,13 +53,12 @@ export default function GalleryPage({
 
     setTransitionEnabled(false);
     setTranslateX(0);
-
     isAnimatingRef.current = false;
     directionRef.current = null;
   }, [images]);
 
   /*
-   * Mengambil lebar satu gambar termasuk gap.
+   * Mengambil lebar satu gambar beserta jaraknya.
    */
   const getImageDistance = useCallback(() => {
     const track = trackRef.current;
@@ -90,15 +79,11 @@ export default function GalleryPage({
 
   /*
    * Geser ke gambar berikutnya.
+   * Selalu bergerak ke arah kanan secara infinite.
    */
   const slideNext = useCallback(() => {
     if (isAnimatingRef.current) return;
-
-    if (
-      images.length <= DESKTOP_VISIBLE_IMAGES
-    ) {
-      return;
-    }
+    if (images.length <= VISIBLE_IMAGES) return;
 
     const imageDistance = getImageDistance();
 
@@ -113,15 +98,14 @@ export default function GalleryPage({
 
   /*
    * Geser ke gambar sebelumnya.
+   *
+   * Dari tampilan awal Spa 1, Spa 2, Spa 3,
+   * ketika digeser ke kanan akan menampilkan
+   * Spa 5 dari sisi kiri.
    */
   const slidePrevious = useCallback(() => {
     if (isAnimatingRef.current) return;
-
-    if (
-      images.length <= DESKTOP_VISIBLE_IMAGES
-    ) {
-      return;
-    }
+    if (images.length <= VISIBLE_IMAGES) return;
 
     const imageDistance = getImageDistance();
 
@@ -132,7 +116,7 @@ export default function GalleryPage({
 
     /*
      * Pindahkan gambar terakhir ke depan
-     * tanpa animasi.
+     * tanpa animasi terlebih dahulu.
      */
     flushSync(() => {
       setTransitionEnabled(false);
@@ -158,7 +142,8 @@ export default function GalleryPage({
     });
 
     /*
-     * Kemudian animasikan masuk dari kiri.
+     * Setelah posisi siap, jalankan animasi
+     * gambar sebelumnya masuk dari kiri.
      */
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
@@ -169,8 +154,9 @@ export default function GalleryPage({
   }, [getImageDistance, images.length]);
 
   /*
-   * Susun ulang gambar setelah animasi selesai
-   * agar slider terasa infinite.
+   * Setelah animasi selesai, susun ulang array
+   * secara tersembunyi agar slider terus berulang
+   * tanpa terlihat melompat kembali.
    */
   const handleTransitionEnd = (event) => {
     if (
@@ -211,19 +197,21 @@ export default function GalleryPage({
   };
 
   /*
-   * Auto-slide setiap 5 detik,
-   * hanya pada ukuran laptop.
+   * Auto-slide setiap 3 detik.
+   * Hanya berjalan pada desktop karena track
+   * slider desktop saja yang menggunakan fungsi ini.
    */
   useEffect(() => {
     if (isPaused) return undefined;
-
-    if (
-      images.length <= DESKTOP_VISIBLE_IMAGES
-    ) {
+    if (images.length <= VISIBLE_IMAGES) {
       return undefined;
     }
 
     const intervalId = window.setInterval(() => {
+      /*
+       * Jangan menjalankan slider desktop
+       * ketika viewport masih mobile.
+       */
       if (window.innerWidth >= 1024) {
         slideNext();
       }
@@ -235,7 +223,7 @@ export default function GalleryPage({
   }, [images.length, isPaused, slideNext]);
 
   /*
-   * Mulai drag dengan mouse atau touch.
+   * Mouse drag dan swipe.
    */
   const handlePointerDown = (event) => {
     if (isAnimatingRef.current) return;
@@ -257,9 +245,6 @@ export default function GalleryPage({
     );
   };
 
-  /*
-   * Selesaikan drag.
-   */
   const handlePointerUp = (event) => {
     if (pointerStartXRef.current === null) {
       setIsPaused(false);
@@ -292,6 +277,13 @@ export default function GalleryPage({
       return;
     }
 
+    /*
+     * Drag ke kiri:
+     * menampilkan gambar berikutnya.
+     *
+     * Drag ke kanan:
+     * menampilkan gambar sebelumnya.
+     */
     if (swipeDistance < 0) {
       slideNext();
     } else {
@@ -307,23 +299,8 @@ export default function GalleryPage({
   };
 
   return (
-    <div
-      className="
-        min-h-screen
-        w-full
-        font-cormorant
-        bg-gradient-to-br
-        from-[#6b5344]
-        to-[#4a3728]
-
-        lg:h-[100svh]
-        lg:min-h-0
-        lg:flex
-        lg:flex-col
-        lg:overflow-hidden
-      "
-    >
-      {/* NAVBAR — TETAP SEPERTI SEBELUMNYA */}
+    <div className="min-h-screen w-full font-cormorant bg-gradient-to-br from-[#6b5344] to-[#4a3728]">
+      {/* NAVBAR */}
       <div
         className="
           sticky
@@ -337,7 +314,6 @@ export default function GalleryPage({
           backdrop-blur-md
           border-b
           border-white/10
-          lg:shrink-0
         "
       >
         {/* BACK BUTTON */}
@@ -379,7 +355,7 @@ export default function GalleryPage({
       </div>
 
       {/* MOBILE DAN TABLET */}
-      {/* Tetap vertikal dan bisa scroll ke bawah */}
+      {/* Tetap seperti tampilan lama: semua gambar vertikal */}
       <div className="flex flex-col lg:hidden">
         {images.map((img, index) => (
           <div
@@ -389,12 +365,7 @@ export default function GalleryPage({
             <img
               src={img}
               alt={`${title} ${index + 1}`}
-              className="
-                block
-                w-full
-                h-auto
-                object-cover
-              "
+              className="block w-full h-auto object-cover"
               loading="lazy"
             />
           </div>
@@ -402,13 +373,13 @@ export default function GalleryPage({
       </div>
 
       {/* LAPTOP DAN DESKTOP */}
+      {/* Slider horizontal, 3 gambar terlihat */}
       <div
         className="
           hidden
           lg:block
-          lg:flex-1
-          lg:min-h-0
           w-full
+          h-[calc(100vh-65px)]
           overflow-hidden
           select-none
         "
@@ -422,29 +393,25 @@ export default function GalleryPage({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerCancel}
       >
-        {/* SLIDER TRACK */}
         <div
           ref={trackRef}
           onTransitionEnd={handleTransitionEnd}
           className="
             flex
+            w-full
             h-full
-            w-max
             will-change-transform
           "
           style={{
             gap: `${IMAGE_GAP}px`,
 
-            transform: `translate3d(
-              ${translateX}px,
-              0,
-              0
-            )`,
+            transform: `translate3d(${translateX}px, 0, 0)`,
 
             transition: transitionEnabled
               ? `transform ${SLIDE_DURATION}ms cubic-bezier(0.16, 1, 0.3, 1)`
               : "none",
 
+            willChange: "transform",
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
           }}
@@ -454,18 +421,20 @@ export default function GalleryPage({
               key={item.id}
               data-gallery-slide
               className="
-                h-full
                 shrink-0
+                h-full
                 overflow-hidden
               "
               style={{
-                /*
-                 * Tinggi mengikuti ruang yang tersedia.
-                 * Lebar dihitung otomatis berdasarkan
-                 * rasio asli 1414 × 2000.
-                 */
-                aspectRatio: IMAGE_ASPECT_RATIO,
-                flex: "0 0 auto",
+                flex: `
+                  0 0 calc(
+                    (100% - ${
+                      IMAGE_GAP *
+                      (VISIBLE_IMAGES - 1)
+                    }px) /
+                    ${VISIBLE_IMAGES}
+                  )
+                `,
               }}
             >
               <img
@@ -478,8 +447,8 @@ export default function GalleryPage({
                 className="
                   block
                   w-full
-                  h-full
-                  object-contain
+                  h-[calc(100vh-65px)]
+                  object-cover
                   select-none
                   pointer-events-none
                 "

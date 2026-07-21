@@ -60,7 +60,7 @@ const promosData = [
 ];
 
 const sliderGap = 8;
-const autoSlideDelay = 3000;
+const autoSlideDelay = 5000;
 const swipeThreshold = 45;
 
 export default function PromotionsSection({
