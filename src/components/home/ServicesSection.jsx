@@ -10,17 +10,17 @@ const services = [
   { name: "GUEST EXPERIENCE",
     subtitle: "Hotel information and guest services",
     Icon: BookIcon, 
-    path: "/compendium" 
+    path: "/guest-experience" 
   },
   { name: "RESORT GUIDELINES",
     subtitle: "Essential policies for refined stays",
     Icon: ScrollIcon,
-    path: "/rules"
+    path: "/resort-guidelines"
   },
   { name: "LEISURE & ENTERTAINMENT",
     subtitle: "Curated activities and experiences",
     Icon: FacilitiesIcon,
-     path: "/facilities", 
+     path: "/leisure-entertainment", 
   },
   { name: "IN-ROOM DINING",
     subtitle: "Tailored food & beverage",

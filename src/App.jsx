@@ -1,18 +1,19 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import GalleryPage from "./pages/GalleryPage";
-import Compendium from "./pages/galleries/Compendium";
+import GuestExperience from "./pages/galleries/GuestExperience";
 import CompendiumSeminyak from "./pages/galleries/CompendiumSeminyak";
 import CompendiumSuite from "./pages/galleries/CompendiumSuite";
 import CompendiumCanggu from "./pages/galleries/CompendiumCanggu";
-import Facilities from "./pages/galleries/Facilities";
+import ResortGuidelines from "./pages/galleries/ResortGuidelines";
+import LeisureEntertainment from "./pages/galleries/LeisureEntertainment";
 import Food from "./pages/galleries/Food";
-import Rules from "./pages/galleries/Rules";
 import Spa from "./pages/galleries/Spa";
 import PromotionPage from "./pages/PromotionPage";
 import Canggu from "./pages/promotions/canggu";
 import Seminyak from "./pages/promotions/seminyak";
 import Suite from "./pages/promotions/suite";
+import PromotionSpa from "./pages/promotions/PromotionSpa";
 
 // import canggu1 from "./assets/promotions/canggu.jpg";
 // import seminyak1 from "./assets/promotions/seminyak.jpg";
@@ -24,17 +25,18 @@ function App() {
       <div className="w-full bg-stone-50 min-h-screen">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/guest-experience" element={<GuestExperience />} />
           <Route path="/compendium-seminyak" element={<CompendiumSeminyak />} />
           <Route path="/compendium-suite" element={<CompendiumSuite />} />
           <Route path="/compendium-canggu" element={<CompendiumCanggu />} />
-          <Route path="/compendium" element={<Compendium />} />
-          <Route path="/facilities" element={<Facilities />} />
+          <Route path="/leisure-entertainment" element={<LeisureEntertainment />} />
+          <Route path="/resort-guidelines" element={<ResortGuidelines />} />
           <Route path="/food" element={<Food />} />
-          <Route path="/rules" element={<Rules />} />
           <Route path="/spa" element={<Spa />} />
           <Route path="/canggu" element={<Canggu />} />
           <Route path="/seminyak" element={<Seminyak />} />
           <Route path="/suite" element={<Suite />} />
+          <Route path="/promotion-spa" element={<PromotionSpa />} />
 {/*       <Route
             path="/canggu"
             element={<GalleryPage title="Canggu" images={[canggu1]} />}
