@@ -14,6 +14,10 @@ import Canggu from "./pages/promotions/canggu";
 import Seminyak from "./pages/promotions/seminyak";
 import Suite from "./pages/promotions/suite";
 import PromotionSpa from "./pages/promotions/PromotionSpa";
+import PromotionCanang from "./pages/promotions/PromotionCanang";
+import PromotionDining from "./pages/promotions/PromotionDining";
+import PromotionCooking from "./pages/promotions/PromotionCooking";
+import PromotionRomantic from "./pages/promotions/PromotionRomantic";
 
 // import canggu1 from "./assets/promotions/canggu.jpg";
 // import seminyak1 from "./assets/promotions/seminyak.jpg";
@@ -37,6 +41,10 @@ function App() {
           <Route path="/seminyak" element={<Seminyak />} />
           <Route path="/suite" element={<Suite />} />
           <Route path="/promotion-spa" element={<PromotionSpa />} />
+          <Route path="/promotion-canang" element={<PromotionCanang />} />
+          <Route path="/promotion-dining" element={<PromotionDining />} />
+          <Route path="/promotion-cooking" element={<PromotionCooking />} />
+          <Route path="/promotion-romantic" element={<PromotionRomantic />} />
 {/*       <Route
             path="/canggu"
             element={<GalleryPage title="Canggu" images={[canggu1]} />}

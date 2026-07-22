@@ -40,22 +40,22 @@ const promosData = [
   {
     tag: "Romantic Dinner",
     image: romantic,
-    path: "/",
+    path: "/promotion-romantic",
   },
   {
     tag: "Floating Dining Experience",
     image: dining,
-    path: "/",
+    path: "/promotion-dining",
   },
   {
     tag: "Canang Making",
     image: canang,
-    path: "/",
+    path: "/promotion-canang",
   },
   {
     tag: "Balinese Cooking Class",
     image: cooking,
-    path: "/",
+    path: "/promotion-cooking",
   },
 ];
 
