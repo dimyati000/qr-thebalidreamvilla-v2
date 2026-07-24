@@ -11,13 +11,13 @@ import BackIcon from "../components/icons/BackIcon";
 
 const IMAGE_GAP = 0;
 
-/* Jeda sebelum slider desktop berpindah */
+/* Waktu diam sebelum berpindah */
 const AUTO_SLIDE_DELAY = 5000;
 
-/* Durasi animasi slider desktop */
+/* Durasi animasi pergeseran */
 const SLIDE_DURATION = 1000;
 
-/* Minimal drag untuk berpindah slide */
+/* Minimal jarak drag untuk menggeser */
 const SWIPE_THRESHOLD = 30;
 
 function createGalleryItems(images) {
@@ -31,26 +31,6 @@ function createGalleryItems(images) {
 export default function GalleryPage({
   title,
   images = [],
-
-  /*
-   * Default null:
-   * halaman lain tetap menggunakan background lama.
-   *
-   * Contoh Resort Guidelines:
-   * desktopViewportBackground="#ffffff"
-   */
-  desktopViewportBackground = null,
-
-  /*
-   * Default false:
-   * auto-scroll mobile tidak aktif kecuali diminta.
-   *
-   * Contoh Spa:
-   * mobileAutoScroll
-   */
-  mobileAutoScroll = false,
-  mobileAutoScrollDelay = 5000,
-  mobileAutoScrollSpeed = 32,
 }) {
   const navigate = useNavigate();
 
@@ -63,19 +43,11 @@ export default function GalleryPage({
   const pointerStartXRef = useRef(null);
   const pointerIdRef = useRef(null);
 
-  /*
-   * Auto-scroll mobile dan tablet.
-   */
-  const mobileScrollTimeoutRef = useRef(null);
-  const mobileScrollFrameRef = useRef(null);
-  const isMobileAutoScrollingRef = useRef(false);
-
   const [galleryItems, setGalleryItems] = useState(() =>
     createGalleryItems(images)
   );
 
   const [translateX, setTranslateX] = useState(0);
-
   const [transitionEnabled, setTransitionEnabled] =
     useState(false);
 
@@ -85,231 +57,12 @@ export default function GalleryPage({
   const [canSlide, setCanSlide] = useState(false);
 
   /*
-   * =====================================================
-   * MOBILE DAN TABLET AUTO-SCROLL
-   * =====================================================
+   * Memeriksa apakah total lebar gambar
+   * lebih besar daripada area layar.
+   *
+   * Slider hanya dijalankan jika memang
+   * terdapat gambar di luar viewport.
    */
-
-  const stopMobileAutoScroll = useCallback(() => {
-    if (mobileScrollTimeoutRef.current !== null) {
-      window.clearTimeout(
-        mobileScrollTimeoutRef.current
-      );
-
-      mobileScrollTimeoutRef.current = null;
-    }
-
-    if (mobileScrollFrameRef.current !== null) {
-      window.cancelAnimationFrame(
-        mobileScrollFrameRef.current
-      );
-
-      mobileScrollFrameRef.current = null;
-    }
-
-    isMobileAutoScrollingRef.current = false;
-  }, []);
-
-  const scheduleMobileAutoScroll =
-    useCallback(() => {
-      stopMobileAutoScroll();
-
-      if (!mobileAutoScroll) return;
-
-      /*
-       * Hanya aktif di bawah ukuran laptop.
-       */
-      if (window.innerWidth >= 1024) return;
-
-      mobileScrollTimeoutRef.current =
-        window.setTimeout(() => {
-          const scrollingElement =
-            document.scrollingElement ||
-            document.documentElement;
-
-          const maximumScroll =
-            scrollingElement.scrollHeight -
-            window.innerHeight;
-
-          if (maximumScroll <= 0) return;
-
-          let previousTime =
-            window.performance.now();
-
-          isMobileAutoScrollingRef.current = true;
-
-          const animateScroll = (currentTime) => {
-            /*
-             * Berhenti jika viewport berubah
-             * menjadi ukuran laptop.
-             */
-            if (window.innerWidth >= 1024) {
-              stopMobileAutoScroll();
-              return;
-            }
-
-            const deltaTime =
-              (currentTime - previousTime) / 1000;
-
-            previousTime = currentTime;
-
-            const currentMaximumScroll =
-              scrollingElement.scrollHeight -
-              window.innerHeight;
-
-            const currentScroll =
-              scrollingElement.scrollTop;
-
-            const nextScroll =
-              currentScroll +
-              mobileAutoScrollSpeed * deltaTime;
-
-            /*
-             * Berhenti ketika sudah mencapai
-             * bagian paling bawah.
-             */
-            if (
-              currentMaximumScroll <= 0 ||
-              nextScroll >= currentMaximumScroll
-            ) {
-              scrollingElement.scrollTop =
-                currentMaximumScroll;
-
-              mobileScrollFrameRef.current = null;
-              isMobileAutoScrollingRef.current =
-                false;
-
-              return;
-            }
-
-            scrollingElement.scrollTop = nextScroll;
-
-            mobileScrollFrameRef.current =
-              window.requestAnimationFrame(
-                animateScroll
-              );
-          };
-
-          mobileScrollFrameRef.current =
-            window.requestAnimationFrame(
-              animateScroll
-            );
-        }, mobileAutoScrollDelay);
-    }, [
-      mobileAutoScroll,
-      mobileAutoScrollDelay,
-      mobileAutoScrollSpeed,
-      stopMobileAutoScroll,
-    ]);
-
-  useEffect(() => {
-    if (!mobileAutoScroll) {
-      stopMobileAutoScroll();
-      return undefined;
-    }
-
-    /*
-     * Saat pengguna melakukan interaksi manual:
-     * - auto-scroll berhenti
-     * - menunggu lagi sesuai delay
-     * - kemudian berjalan kembali
-     */
-    const handleManualInteraction = () => {
-      scheduleMobileAutoScroll();
-    };
-
-    const handleResize = () => {
-      scheduleMobileAutoScroll();
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        stopMobileAutoScroll();
-      } else {
-        scheduleMobileAutoScroll();
-      }
-    };
-
-    scheduleMobileAutoScroll();
-
-    window.addEventListener(
-      "wheel",
-      handleManualInteraction,
-      { passive: true }
-    );
-
-    window.addEventListener(
-      "touchstart",
-      handleManualInteraction,
-      { passive: true }
-    );
-
-    window.addEventListener(
-      "pointerdown",
-      handleManualInteraction,
-      { passive: true }
-    );
-
-    window.addEventListener(
-      "keydown",
-      handleManualInteraction
-    );
-
-    window.addEventListener(
-      "resize",
-      handleResize
-    );
-
-    document.addEventListener(
-      "visibilitychange",
-      handleVisibilityChange
-    );
-
-    return () => {
-      stopMobileAutoScroll();
-
-      window.removeEventListener(
-        "wheel",
-        handleManualInteraction
-      );
-
-      window.removeEventListener(
-        "touchstart",
-        handleManualInteraction
-      );
-
-      window.removeEventListener(
-        "pointerdown",
-        handleManualInteraction
-      );
-
-      window.removeEventListener(
-        "keydown",
-        handleManualInteraction
-      );
-
-      window.removeEventListener(
-        "resize",
-        handleResize
-      );
-
-      document.removeEventListener(
-        "visibilitychange",
-        handleVisibilityChange
-      );
-    };
-  }, [
-    mobileAutoScroll,
-    scheduleMobileAutoScroll,
-    stopMobileAutoScroll,
-  ]);
-
-  /*
-   * =====================================================
-   * DESKTOP GALLERY SLIDER
-   * =====================================================
-   */
-
   const checkCanSlide = useCallback(() => {
     const viewport = viewportRef.current;
     const track = trackRef.current;
@@ -317,9 +70,7 @@ export default function GalleryPage({
     if (!viewport || !track) return;
 
     const slides = Array.from(
-      track.querySelectorAll(
-        "[data-gallery-slide]"
-      )
+      track.querySelectorAll("[data-gallery-slide]")
     );
 
     if (slides.length === 0) {
@@ -329,14 +80,12 @@ export default function GalleryPage({
 
     const totalImagesWidth = slides.reduce(
       (total, slide) =>
-        total +
-        slide.getBoundingClientRect().width,
+        total + slide.getBoundingClientRect().width,
       0
     );
 
     const totalGap =
-      Math.max(slides.length - 1, 0) *
-      IMAGE_GAP;
+      Math.max(slides.length - 1, 0) * IMAGE_GAP;
 
     const contentWidth =
       totalImagesWidth + totalGap;
@@ -351,7 +100,7 @@ export default function GalleryPage({
 
     /*
      * Jika seluruh gambar sudah muat,
-     * kembalikan ke posisi awal dan center.
+     * kembalikan ke posisi normal dan center.
      */
     if (!shouldSlide) {
       setTransitionEnabled(false);
@@ -363,12 +112,10 @@ export default function GalleryPage({
   }, []);
 
   /*
-   * Reset gallery jika images berubah.
+   * Reset gallery ketika images berubah.
    */
   useEffect(() => {
-    setGalleryItems(
-      createGalleryItems(images)
-    );
+    setGalleryItems(createGalleryItems(images));
 
     setTransitionEnabled(false);
     setTranslateX(0);
@@ -377,24 +124,19 @@ export default function GalleryPage({
     isAnimatingRef.current = false;
     directionRef.current = null;
 
-    const firstFrame =
+    const frameId = window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        const secondFrame =
-          window.requestAnimationFrame(() => {
-            checkCanSlide();
-          });
-
-        return secondFrame;
+        checkCanSlide();
       });
+    });
 
     return () => {
-      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(frameId);
     };
   }, [images, checkCanSlide]);
 
   /*
-   * Periksa ulang ukuran slider ketika
-   * ukuran browser berubah.
+   * Periksa ulang saat ukuran browser berubah.
    */
   useEffect(() => {
     const handleResize = () => {
@@ -409,10 +151,7 @@ export default function GalleryPage({
       });
     };
 
-    window.addEventListener(
-      "resize",
-      handleResize
-    );
+    window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener(
@@ -422,47 +161,56 @@ export default function GalleryPage({
     };
   }, [checkCanSlide]);
 
-  const getFirstSlideDistance =
-    useCallback(() => {
-      const track = trackRef.current;
+  /*
+   * Mengambil lebar slide pertama.
+   *
+   * Digunakan saat bergerak ke gambar berikutnya.
+   */
+  const getFirstSlideDistance = useCallback(() => {
+    const track = trackRef.current;
 
-      if (!track) return 0;
+    if (!track) return 0;
 
-      const firstSlide = track.querySelector(
-        "[data-gallery-slide]"
-      );
+    const firstSlide = track.querySelector(
+      "[data-gallery-slide]"
+    );
 
-      if (!firstSlide) return 0;
+    if (!firstSlide) return 0;
 
-      return (
-        firstSlide.getBoundingClientRect().width +
-        IMAGE_GAP
-      );
-    }, []);
-
-  const getLastSlideDistance =
-    useCallback(() => {
-      const track = trackRef.current;
-
-      if (!track) return 0;
-
-      const slides = track.querySelectorAll(
-        "[data-gallery-slide]"
-      );
-
-      const lastSlide =
-        slides[slides.length - 1];
-
-      if (!lastSlide) return 0;
-
-      return (
-        lastSlide.getBoundingClientRect().width +
-        IMAGE_GAP
-      );
-    }, []);
+    return (
+      firstSlide.getBoundingClientRect().width +
+      IMAGE_GAP
+    );
+  }, []);
 
   /*
-   * Geser ke gambar berikutnya.
+   * Mengambil lebar slide terakhir.
+   *
+   * Digunakan saat bergerak ke gambar sebelumnya.
+   * Ini membuat slider tetap aman meskipun
+   * rasio setiap gambar berbeda.
+   */
+  const getLastSlideDistance = useCallback(() => {
+    const track = trackRef.current;
+
+    if (!track) return 0;
+
+    const slides = track.querySelectorAll(
+      "[data-gallery-slide]"
+    );
+
+    const lastSlide = slides[slides.length - 1];
+
+    if (!lastSlide) return 0;
+
+    return (
+      lastSlide.getBoundingClientRect().width +
+      IMAGE_GAP
+    );
+  }, []);
+
+  /*
+   * Bergerak ke gambar berikutnya.
    */
   const slideNext = useCallback(() => {
     if (!canSlide) return;
@@ -481,7 +229,10 @@ export default function GalleryPage({
   }, [canSlide, getFirstSlideDistance]);
 
   /*
-   * Geser ke gambar sebelumnya.
+   * Bergerak ke gambar sebelumnya.
+   *
+   * Gambar terakhir dipindahkan ke depan
+   * tanpa animasi, lalu masuk secara smooth.
    */
   const slidePrevious = useCallback(() => {
     if (!canSlide) return;
@@ -504,9 +255,7 @@ export default function GalleryPage({
         }
 
         const lastItem =
-          currentItems[
-            currentItems.length - 1
-          ];
+          currentItems[currentItems.length - 1];
 
         return [
           lastItem,
@@ -517,9 +266,15 @@ export default function GalleryPage({
         ];
       });
 
+      /*
+       * Secara visual mempertahankan posisi lama.
+       */
       setTranslateX(-slideDistance);
     });
 
+    /*
+     * Jalankan animasi masuk dari kiri.
+     */
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
         setTransitionEnabled(true);
@@ -529,7 +284,9 @@ export default function GalleryPage({
   }, [canSlide, getLastSlideDistance]);
 
   /*
-   * Susun ulang item setelah animasi selesai.
+   * Menyusun ulang array setelah animasi selesai
+   * agar slider bisa berulang tanpa bergerak
+   * mundur secara terlihat.
    */
   const handleTransitionEnd = (event) => {
     if (
@@ -558,9 +315,7 @@ export default function GalleryPage({
       });
     }
 
-    if (
-      directionRef.current === "previous"
-    ) {
+    if (directionRef.current === "previous") {
       setTransitionEnabled(false);
     }
 
@@ -572,7 +327,8 @@ export default function GalleryPage({
   };
 
   /*
-   * Auto-slide desktop.
+   * Auto-slide hanya berjalan apabila
+   * terdapat gambar di luar layar.
    */
   useEffect(() => {
     if (!canSlide) return undefined;
@@ -593,6 +349,9 @@ export default function GalleryPage({
     slideNext,
   ]);
 
+  /*
+   * Mulai drag dengan mouse.
+   */
   const handlePointerDown = (event) => {
     if (!canSlide) return;
     if (isAnimatingRef.current) return;
@@ -604,11 +363,8 @@ export default function GalleryPage({
       return;
     }
 
-    pointerStartXRef.current =
-      event.clientX;
-
-    pointerIdRef.current =
-      event.pointerId;
+    pointerStartXRef.current = event.clientX;
+    pointerIdRef.current = event.pointerId;
 
     setIsInteracting(true);
 
@@ -617,6 +373,9 @@ export default function GalleryPage({
     );
   };
 
+  /*
+   * Selesai drag.
+   */
   const handlePointerUp = (event) => {
     if (pointerStartXRef.current === null) {
       setIsInteracting(false);
@@ -624,8 +383,7 @@ export default function GalleryPage({
     }
 
     const swipeDistance =
-      event.clientX -
-      pointerStartXRef.current;
+      event.clientX - pointerStartXRef.current;
 
     pointerStartXRef.current = null;
 
@@ -698,6 +456,7 @@ export default function GalleryPage({
           lg:shrink-0
         "
       >
+        {/* BACK BUTTON */}
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -736,6 +495,7 @@ export default function GalleryPage({
       </div>
 
       {/* MOBILE DAN TABLET */}
+      {/* Tetap vertikal seperti sebelumnya */}
       <div className="flex flex-col lg:hidden">
         {images.map((img, index) => (
           <div
@@ -745,29 +505,13 @@ export default function GalleryPage({
             <img
               src={img}
               alt={`${title} ${index + 1}`}
-              loading={
-                index === 0
-                  ? "eager"
-                  : "lazy"
-              }
-              decoding="async"
-              fetchPriority={
-                index === 0
-                  ? "high"
-                  : "low"
-              }
-              onLoad={
-                index === 0 &&
-                mobileAutoScroll
-                  ? scheduleMobileAutoScroll
-                  : undefined
-              }
               className="
                 block
                 w-full
                 h-auto
                 object-cover
               "
+              loading="lazy"
             />
           </div>
         ))}
@@ -788,14 +532,6 @@ export default function GalleryPage({
         style={{
           touchAction: "pan-y",
 
-          /*
-           * Hanya berubah pada page yang
-           * memberikan prop background.
-           */
-          backgroundColor:
-            desktopViewportBackground ||
-            undefined,
-
           cursor: canSlide
             ? isInteracting
               ? "grabbing"
@@ -809,9 +545,7 @@ export default function GalleryPage({
         {/* SLIDER TRACK */}
         <div
           ref={trackRef}
-          onTransitionEnd={
-            handleTransitionEnd
-          }
+          onTransitionEnd={handleTransitionEnd}
           className="
             flex
             h-full
@@ -820,6 +554,10 @@ export default function GalleryPage({
           style={{
             width: "max-content",
 
+            /*
+             * Jika semua gambar muat,
+             * track selebar layar dan gambar di-center.
+             */
             minWidth: canSlide
               ? "max-content"
               : "100%",
@@ -842,8 +580,7 @@ export default function GalleryPage({
 
             willChange: "transform",
             backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility:
-              "hidden",
+            WebkitBackfaceVisibility: "hidden",
           }}
         >
           {galleryItems.map((item) => (
@@ -867,7 +604,6 @@ export default function GalleryPage({
                 }`}
                 draggable="false"
                 loading="eager"
-                decoding="async"
                 onLoad={checkCanSlide}
                 className="
                   block

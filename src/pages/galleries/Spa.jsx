@@ -23,6 +23,9 @@ export default function Spa() {
     <GalleryPage
       title="SPA & WELLNESS"
       images={spaImages}
+      mobileAutoScroll
+      mobileAutoScrollDelay={5000}
+      mobileAutoScrollSpeed={32}
     />
   );
 }

@@ -18,6 +18,10 @@ export default function ResortGuidelines() {
     <GalleryPage
       title="RESORT GUIDELINES"
       images={ResortGuidelinesImages}
+        desktopViewportBackground="#ffffff"
+      mobileAutoScroll
+  mobileAutoScrollDelay={5000}
+  mobileAutoScrollSpeed={32}
     />
   );
 }

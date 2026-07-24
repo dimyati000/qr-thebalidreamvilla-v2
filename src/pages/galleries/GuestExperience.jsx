@@ -89,7 +89,7 @@ const services = [
   },
   {
     id: "canggu",
-    name: "THE BALI DREAM SUITE VILLA RESORT & ECHO BEACH CANGGU",
+    name: "THE BALI DREAM VILLA & RESORT ECHO BEACH CANGGU",
     flyers: [
       canggu1,
       canggu2,
@@ -107,8 +107,14 @@ const services = [
   },
 ];
 
+/* Menunggu lima detik sebelum auto-scroll dimulai */
 const AUTO_SCROLL_DELAY = 5000;
+
+/* Kecepatan auto-scroll dalam pixel per detik */
 const AUTO_SCROLL_SPEED = 65;
+
+/* Interval pergantian background */
+const BACKGROUND_DELAY = 5000;
 
 export default function Compendium() {
   const navigate = useNavigate();
@@ -116,6 +122,7 @@ export default function Compendium() {
   const scrollContainerRef = useRef(null);
   const autoScrollTimeoutRef = useRef(null);
   const autoScrollFrameRef = useRef(null);
+  const isAutoScrollingRef = useRef(false);
 
   const [backgroundIndex, setBackgroundIndex] =
     useState(0);
@@ -124,8 +131,8 @@ export default function Compendium() {
   const [expandedId, setExpandedId] = useState(null);
 
   /*
-   * Hentikan timer dan animasi auto-scroll
-   * yang sedang berjalan.
+   * Menghentikan timeout dan requestAnimationFrame
+   * auto-scroll yang sedang berjalan.
    */
   const clearAutoScroll = useCallback(() => {
     if (autoScrollTimeoutRef.current) {
@@ -143,62 +150,78 @@ export default function Compendium() {
 
       autoScrollFrameRef.current = null;
     }
+
+    isAutoScrollingRef.current = false;
   }, []);
 
   /*
-   * Jadwalkan auto-scroll setelah 5 detik.
+   * Menjadwalkan auto-scroll setelah lima detik.
    */
   const scheduleAutoScroll = useCallback(() => {
     clearAutoScroll();
 
-    const container = scrollContainerRef.current;
-
-    if (!container) return;
-
     autoScrollTimeoutRef.current =
       window.setTimeout(() => {
+        const container =
+          scrollContainerRef.current;
+
+        if (!container) return;
+
         const maxScroll =
           container.scrollHeight -
           container.clientHeight;
 
         /*
-         * Tidak perlu auto-scroll apabila semua
-         * gambar sudah terlihat tanpa scroll.
+         * Tidak perlu auto-scroll jika isi
+         * belum lebih tinggi daripada container.
          */
         if (maxScroll <= 0) return;
+
+        isAutoScrollingRef.current = true;
 
         let previousTime =
           window.performance.now();
 
         const animateScroll = (currentTime) => {
+          const currentContainer =
+            scrollContainerRef.current;
+
+          if (!currentContainer) {
+            clearAutoScroll();
+            return;
+          }
+
           const deltaTime =
             (currentTime - previousTime) / 1000;
 
           previousTime = currentTime;
 
           const currentMaxScroll =
-            container.scrollHeight -
-            container.clientHeight;
+            currentContainer.scrollHeight -
+            currentContainer.clientHeight;
 
           const nextPosition =
-            container.scrollTop +
+            currentContainer.scrollTop +
             AUTO_SCROLL_SPEED * deltaTime;
 
           /*
-           * Berhenti ketika sudah mencapai
-           * gambar paling bawah.
+           * Berhenti ketika mencapai
+           * bagian paling bawah.
            */
           if (
             nextPosition >= currentMaxScroll
           ) {
-            container.scrollTop =
+            currentContainer.scrollTop =
               currentMaxScroll;
 
             autoScrollFrameRef.current = null;
+            isAutoScrollingRef.current = false;
+
             return;
           }
 
-          container.scrollTop = nextPosition;
+          currentContainer.scrollTop =
+            nextPosition;
 
           autoScrollFrameRef.current =
             window.requestAnimationFrame(
@@ -214,7 +237,7 @@ export default function Compendium() {
   }, [clearAutoScroll]);
 
   /*
-   * Animasi card masuk.
+   * Animasi masuk card.
    */
   useEffect(() => {
     const showTimer = window.setTimeout(() => {
@@ -227,7 +250,7 @@ export default function Compendium() {
   }, []);
 
   /*
-   * Background otomatis berubah setiap 5 detik.
+   * Background berubah otomatis.
    */
   useEffect(() => {
     if (backgroundImages.length <= 1) {
@@ -240,7 +263,7 @@ export default function Compendium() {
           (currentIndex + 1) %
           backgroundImages.length
       );
-    }, 5000);
+    }, BACKGROUND_DELAY);
 
     return () => {
       window.clearInterval(intervalId);
@@ -249,28 +272,41 @@ export default function Compendium() {
 
   /*
    * Ketika card dibuka:
-   * - posisi dimulai dari atas
-   * - tunggu 5 detik
-   * - mulai scroll perlahan
+   * - elemen gambar baru dibuat
+   * - scroll dimulai dari posisi paling atas
+   * - auto-scroll dijadwalkan
    */
   useEffect(() => {
     clearAutoScroll();
 
-    if (!expandedId) return undefined;
+    if (!expandedId) {
+      return undefined;
+    }
 
-    const frameId =
+    /*
+     * Dua requestAnimationFrame memberi waktu
+     * kepada React untuk memasukkan gambar
+     * ke dalam DOM terlebih dahulu.
+     */
+    const firstFrame =
       window.requestAnimationFrame(() => {
-        const container =
-          scrollContainerRef.current;
+        const secondFrame =
+          window.requestAnimationFrame(() => {
+            const container =
+              scrollContainerRef.current;
 
-        if (!container) return;
+            if (!container) return;
 
-        container.scrollTop = 0;
-        scheduleAutoScroll();
+            container.scrollTop = 0;
+            scheduleAutoScroll();
+          });
+
+        autoScrollFrameRef.current =
+          secondFrame;
       });
 
     return () => {
-      window.cancelAnimationFrame(frameId);
+      window.cancelAnimationFrame(firstFrame);
       clearAutoScroll();
     };
   }, [
@@ -279,7 +315,19 @@ export default function Compendium() {
     scheduleAutoScroll,
   ]);
 
+  /*
+   * Bersihkan seluruh timer ketika
+   * pengguna meninggalkan halaman.
+   */
+  useEffect(() => {
+    return () => {
+      clearAutoScroll();
+    };
+  }, [clearAutoScroll]);
+
   const handleCardToggle = (serviceId) => {
+    clearAutoScroll();
+
     setExpandedId((currentId) =>
       currentId === serviceId
         ? null
@@ -288,13 +336,22 @@ export default function Compendium() {
   };
 
   /*
-   * Saat pengguna melakukan scroll manual,
-   * hentikan auto-scroll sementara.
-   *
-   * Setelah 5 detik tidak ada interaksi,
-   * auto-scroll akan berjalan lagi.
+   * Jika pengguna scroll atau menyentuh container,
+   * auto-scroll dihentikan lalu dimulai kembali
+   * setelah pengguna diam selama lima detik.
    */
   const handleManualInteraction = () => {
+    scheduleAutoScroll();
+  };
+
+  /*
+   * Jika gambar pertama baru selesai dimuat,
+   * jadwalkan ulang auto-scroll karena tinggi
+   * container sudah dapat dihitung.
+   */
+  const handleFirstImageLoad = () => {
+    if (!expandedId) return;
+
     scheduleAutoScroll();
   };
 
@@ -318,6 +375,17 @@ export default function Compendium() {
               src={image}
               alt=""
               aria-hidden="true"
+              loading={
+                index === 0
+                  ? "eager"
+                  : "lazy"
+              }
+              decoding="async"
+              fetchPriority={
+                index === 0
+                  ? "high"
+                  : "low"
+              }
               className={`
                 absolute
                 inset-0
@@ -458,6 +526,7 @@ export default function Compendium() {
                         )
                       }
                       aria-expanded={isExpanded}
+                      aria-controls={`gallery-${service.id}`}
                       className="
                         flex
                         w-full
@@ -491,6 +560,7 @@ export default function Compendium() {
 
                     {/* EXPANDED CONTENT */}
                     <div
+                      id={`gallery-${service.id}`}
                       className={`
                         w-full
                         overflow-hidden
@@ -504,78 +574,105 @@ export default function Compendium() {
                         }
                       `}
                     >
-                      {/* SCROLL CONTAINER */}
-                      <div
-                        ref={
-                          isExpanded
-                            ? scrollContainerRef
-                            : null
-                        }
-                        onWheel={
-                          handleManualInteraction
-                        }
-                        onPointerDown={
-                          handleManualInteraction
-                        }
-                        onTouchStart={
-                          handleManualInteraction
-                        }
-                        onScroll={() => {
-                          /*
-                           * Jangan terus reset timer ketika
-                           * scroll berasal dari auto-scroll.
-                           */
-                          if (
-                            !autoScrollFrameRef.current
-                          ) {
-                            handleManualInteraction();
+                      {/*
+                        Gambar hanya dibuat ketika card ini terbuka.
+
+                        Jika isExpanded false:
+                        - img tidak ada di DOM
+                        - browser tidak mengunduh file
+                        - memori browser lebih ringan
+                      */}
+                      {isExpanded && (
+                        <div
+                          ref={scrollContainerRef}
+                          onWheel={
+                            handleManualInteraction
                           }
-                        }}
-                        className="
-                          scrollbar-hide
-                          max-h-[65vh]
-                          w-full
-                          overflow-y-auto
-                          overscroll-contain
-                          [scrollbar-width:none]
-                          [-ms-overflow-style:none]
-                          [&::-webkit-scrollbar]:hidden
-                        "
-                        style={{
-                          scrollbarWidth: "none",
-                          msOverflowStyle: "none",
-                        }}
-                      >
-                        <div className="flex flex-col">
-                          {service.flyers.map(
-                            (
-                              image,
-                              imageIndex
-                            ) => (
-                              <img
-                                key={`${service.id}-${imageIndex}`}
-                                src={image}
-                                alt={`${service.name} flyer ${
-                                  imageIndex + 1
-                                }`}
-                                loading={
-                                  imageIndex < 2
-                                    ? "eager"
-                                    : "lazy"
-                                }
-                                draggable="false"
-                                className="
-                                  block
-                                  h-auto
-                                  w-full
-                                  flex-none
-                                  object-contain
-                                "
-                              />
-                            )
-                          )}
+                          onPointerDown={
+                            handleManualInteraction
+                          }
+                          onTouchStart={
+                            handleManualInteraction
+                          }
+                          onKeyDown={
+                            handleManualInteraction
+                          }
+                          onScroll={() => {
+                            /*
+                             * Jangan reset timer ketika scroll
+                             * berasal dari auto-scroll.
+                             */
+                            if (
+                              !isAutoScrollingRef.current
+                            ) {
+                              handleManualInteraction();
+                            }
+                          }}
+                          tabIndex={0}
+                          className="
+                            max-h-[65vh]
+                            w-full
+                            overflow-y-auto
+                            overscroll-contain
+                            outline-none
+                            [scrollbar-width:none]
+                            [-ms-overflow-style:none]
+                            [&::-webkit-scrollbar]:hidden
+                          "
+                          style={{
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                          }}
+                        >
+                          <div className="flex flex-col">
+                            {service.flyers.map(
+                              (
+                                image,
+                                imageIndex
+                              ) => (
+                                <img
+                                  key={`${service.id}-${imageIndex}`}
+                                  src={image}
+                                  alt={`${service.name} flyer ${
+                                    imageIndex + 1
+                                  }`}
+                                  /*
+                                   * Gambar pertama langsung dimuat
+                                   * setelah card dibuka.
+                                   *
+                                   * Gambar berikutnya baru dimuat
+                                   * ketika mendekati area scroll.
+                                   */
+                                  loading={
+                                    imageIndex === 0
+                                      ? "eager"
+                                      : "lazy"
+                                  }
+                                  decoding="async"
+                                  fetchPriority={
+                                    imageIndex === 0
+                                      ? "high"
+                                      : "low"
+                                  }
+                                  draggable="false"
+                                  onLoad={
+                                    imageIndex === 0
+                                      ? handleFirstImageLoad
+                                      : undefined
+                                  }
+                                  className="
+                                    block
+                                    h-auto
+                                    w-full
+                                    flex-none
+                                    object-contain
+                                  "
+                                />
+                              )
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 );
