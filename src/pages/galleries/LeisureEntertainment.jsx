@@ -39,11 +39,8 @@ const LEISURE_IMAGES = [
 ];
 
 /*
- * Ketiga set ini hanya merupakan buffer internal.
- *
- * Set pertama  : buffer geser ke kiri
- * Set kedua    : posisi awal yang terlihat
- * Set ketiga   : buffer geser terus ke kanan
+ * Tiga set dipakai sebagai buffer internal
+ * agar slider laptop tidak pernah kehabisan gambar.
  */
 const LOOP_ITEMS = Array.from(
   { length: 3 },
@@ -61,9 +58,15 @@ const START_INDEX = IMAGE_COUNT;
 const POSTER_WIDTH = 1414;
 const POSTER_HEIGHT = 2000;
 
+/* Slider laptop */
 const AUTO_SLIDE_DELAY = 5000;
 const SLIDE_DURATION = 1000;
 const SWIPE_THRESHOLD = 30;
+
+/* Auto-scroll mobile dan tablet */
+const MOBILE_AUTO_SCROLL_DELAY = 5000;
+const MOBILE_AUTO_SCROLL_SPEED = 32;
+const MOBILE_BREAKPOINT = 1024;
 
 function normalizeIndex(index) {
   return (
@@ -86,6 +89,12 @@ export default function LeisureEntertainment() {
 
   const loadedImagesRef = useRef(new Set());
 
+  /*
+   * Refs khusus auto-scroll mobile/tablet.
+   */
+  const mobileScrollTimeoutRef = useRef(null);
+  const mobileScrollFrameRef = useRef(null);
+
   const [currentIndex, setCurrentIndex] =
     useState(START_INDEX);
 
@@ -106,6 +115,242 @@ export default function LeisureEntertainment() {
 
   const allImagesLoaded =
     loadedImageCount >= IMAGE_COUNT;
+
+  /*
+   * =====================================================
+   * AUTO-SCROLL MOBILE DAN TABLET
+   * =====================================================
+   */
+
+  /*
+   * Menghentikan timeout dan animasi auto-scroll.
+   */
+  const stopMobileAutoScroll = useCallback(() => {
+    if (mobileScrollTimeoutRef.current !== null) {
+      window.clearTimeout(
+        mobileScrollTimeoutRef.current
+      );
+
+      mobileScrollTimeoutRef.current = null;
+    }
+
+    if (mobileScrollFrameRef.current !== null) {
+      window.cancelAnimationFrame(
+        mobileScrollFrameRef.current
+      );
+
+      mobileScrollFrameRef.current = null;
+    }
+  }, []);
+
+  /*
+   * Menunggu lima detik, lalu halaman bergerak
+   * perlahan ke bawah.
+   */
+  const scheduleMobileAutoScroll =
+    useCallback(() => {
+      stopMobileAutoScroll();
+
+      /*
+       * Hanya aktif di mobile dan tablet.
+       * Tailwind lg juga dimulai dari 1024px.
+       */
+      if (
+        window.innerWidth >= MOBILE_BREAKPOINT
+      ) {
+        return;
+      }
+
+      mobileScrollTimeoutRef.current =
+        window.setTimeout(() => {
+          const scrollingElement =
+            document.scrollingElement ||
+            document.documentElement;
+
+          let previousTime =
+            window.performance.now();
+
+          const animateScroll = (currentTime) => {
+            /*
+             * Hentikan jika ukuran layar berubah
+             * menjadi laptop.
+             */
+            if (
+              window.innerWidth >=
+              MOBILE_BREAKPOINT
+            ) {
+              stopMobileAutoScroll();
+              return;
+            }
+
+            /*
+             * Hentikan sementara ketika tab browser
+             * sedang tidak aktif.
+             */
+            if (document.hidden) {
+              stopMobileAutoScroll();
+              return;
+            }
+
+            const deltaTime =
+              (currentTime - previousTime) /
+              1000;
+
+            previousTime = currentTime;
+
+            /*
+             * Dihitung ulang setiap frame karena
+             * gambar lazy dapat menambah tinggi page.
+             */
+            const maximumScroll =
+              scrollingElement.scrollHeight -
+              window.innerHeight;
+
+            const currentScroll =
+              scrollingElement.scrollTop;
+
+            if (
+              maximumScroll <= 0 ||
+              currentScroll >=
+                maximumScroll - 1
+            ) {
+              scrollingElement.scrollTop =
+                Math.max(maximumScroll, 0);
+
+              mobileScrollFrameRef.current =
+                null;
+
+              return;
+            }
+
+            const nextScroll =
+              currentScroll +
+              MOBILE_AUTO_SCROLL_SPEED *
+                deltaTime;
+
+            scrollingElement.scrollTop =
+              Math.min(
+                nextScroll,
+                maximumScroll
+              );
+
+            mobileScrollFrameRef.current =
+              window.requestAnimationFrame(
+                animateScroll
+              );
+          };
+
+          mobileScrollFrameRef.current =
+            window.requestAnimationFrame(
+              animateScroll
+            );
+        }, MOBILE_AUTO_SCROLL_DELAY);
+    }, [stopMobileAutoScroll]);
+
+  /*
+   * Mengaktifkan auto-scroll ketika page dibuka.
+   *
+   * Saat user menyentuh, scroll manual, atau
+   * menekan keyboard:
+   * - auto-scroll berhenti
+   * - menunggu lima detik
+   * - berjalan kembali
+   */
+  useEffect(() => {
+    const handleManualInteraction = () => {
+      scheduleMobileAutoScroll();
+    };
+
+    const handleResize = () => {
+      scheduleMobileAutoScroll();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopMobileAutoScroll();
+      } else {
+        scheduleMobileAutoScroll();
+      }
+    };
+
+    scheduleMobileAutoScroll();
+
+    window.addEventListener(
+      "wheel",
+      handleManualInteraction,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "touchstart",
+      handleManualInteraction,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "pointerdown",
+      handleManualInteraction,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "keydown",
+      handleManualInteraction
+    );
+
+    window.addEventListener(
+      "resize",
+      handleResize
+    );
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
+
+    return () => {
+      stopMobileAutoScroll();
+
+      window.removeEventListener(
+        "wheel",
+        handleManualInteraction
+      );
+
+      window.removeEventListener(
+        "touchstart",
+        handleManualInteraction
+      );
+
+      window.removeEventListener(
+        "pointerdown",
+        handleManualInteraction
+      );
+
+      window.removeEventListener(
+        "keydown",
+        handleManualInteraction
+      );
+
+      window.removeEventListener(
+        "resize",
+        handleResize
+      );
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+    };
+  }, [
+    scheduleMobileAutoScroll,
+    stopMobileAutoScroll,
+  ]);
+
+  /*
+   * =====================================================
+   * SLIDER LAPTOP DAN DESKTOP
+   * =====================================================
+   */
 
   /*
    * Menghitung lebar satu poster berdasarkan
@@ -145,8 +390,8 @@ export default function LeisureEntertainment() {
   }, []);
 
   /*
-   * Posisi awal diatur sebelum browser menampilkan
-   * track, sehingga set buffer pertama tidak terlihat.
+   * Posisi awal berada di buffer tengah sebelum
+   * browser menampilkan slider.
    */
   useLayoutEffect(() => {
     const frameId =
@@ -160,17 +405,19 @@ export default function LeisureEntertainment() {
   }, [measureSlider]);
 
   /*
-   * Hitung ulang ukuran ketika viewport berubah.
+   * Hitung ulang slider saat ukuran viewport berubah.
    */
   useEffect(() => {
     const viewport = viewportRef.current;
 
     if (!viewport) return undefined;
 
-    const resizeObserver = new ResizeObserver(() => {
-      setIsPositionReady(false);
-      measureSlider();
-    });
+    const resizeObserver = new ResizeObserver(
+      () => {
+        setIsPositionReady(false);
+        measureSlider();
+      }
+    );
 
     resizeObserver.observe(viewport);
 
@@ -180,24 +427,27 @@ export default function LeisureEntertainment() {
   }, [measureSlider]);
 
   /*
-   * Hanya menghitung empat file unik.
-   * Salinan buffer tidak menambah hitungan.
+   * Menghitung hanya empat file unik,
+   * bukan semua salinan buffer.
    */
-  const markImageLoaded = useCallback((imageId) => {
-    if (loadedImagesRef.current.has(imageId)) {
-      return;
-    }
+  const markImageLoaded = useCallback(
+    (imageId) => {
+      if (
+        loadedImagesRef.current.has(imageId)
+      ) {
+        return;
+      }
 
-    loadedImagesRef.current.add(imageId);
+      loadedImagesRef.current.add(imageId);
 
-    setLoadedImageCount(
-      loadedImagesRef.current.size
-    );
-  }, []);
+      setLoadedImageCount(
+        loadedImagesRef.current.size
+      );
+    },
+    []
+  );
 
   /*
-   * Bergerak satu poster.
-   *
    * direction:
    *  1 = berikutnya
    * -1 = sebelumnya
@@ -212,9 +462,11 @@ export default function LeisureEntertainment() {
       isAnimatingRef.current = true;
 
       const nextIndex =
-        currentIndexRef.current + direction;
+        currentIndexRef.current +
+        direction;
 
-      currentIndexRef.current = nextIndex;
+      currentIndexRef.current =
+        nextIndex;
 
       setTransitionEnabled(true);
       setCurrentIndex(nextIndex);
@@ -235,12 +487,8 @@ export default function LeisureEntertainment() {
   }, [moveSlider]);
 
   /*
-   * Setelah memasuki set buffer luar,
-   * posisi dipindahkan diam-diam ke item yang
-   * identik di set tengah.
-   *
-   * Karena gambar sebelum dan sesudah reset sama,
-   * pengguna tidak melihat perpindahan ke kiri.
+   * Setelah memasuki buffer luar, slider
+   * dipindahkan diam-diam ke buffer tengah.
    */
   const handleTransitionEnd = (event) => {
     if (
@@ -279,7 +527,7 @@ export default function LeisureEntertainment() {
 
     /*
      * Memaksa browser menyelesaikan posisi reset
-     * sebelum animasi berikutnya boleh dimulai.
+     * sebelum gerakan berikutnya.
      */
     trackRef.current?.getBoundingClientRect();
 
@@ -289,15 +537,32 @@ export default function LeisureEntertainment() {
   };
 
   /*
-   * Auto-slide setiap lima detik.
+   * Auto-slide laptop setiap lima detik.
    */
   useEffect(() => {
-    if (!allImagesLoaded) return undefined;
-    if (!isPositionReady) return undefined;
-    if (isInteracting) return undefined;
+    if (!allImagesLoaded) {
+      return undefined;
+    }
+
+    if (!isPositionReady) {
+      return undefined;
+    }
+
+    if (isInteracting) {
+      return undefined;
+    }
 
     const intervalId = window.setInterval(() => {
-      slideNext();
+      /*
+       * Auto-slide horizontal hanya aktif
+       * pada ukuran laptop.
+       */
+      if (
+        window.innerWidth >=
+        MOBILE_BREAKPOINT
+      ) {
+        slideNext();
+      }
     }, AUTO_SLIDE_DELAY);
 
     return () => {
@@ -322,8 +587,11 @@ export default function LeisureEntertainment() {
       return;
     }
 
-    pointerStartXRef.current = event.clientX;
-    pointerIdRef.current = event.pointerId;
+    pointerStartXRef.current =
+      event.clientX;
+
+    pointerIdRef.current =
+      event.pointerId;
 
     setIsInteracting(true);
 
@@ -333,7 +601,9 @@ export default function LeisureEntertainment() {
   };
 
   const handlePointerUp = (event) => {
-    if (pointerStartXRef.current === null) {
+    if (
+      pointerStartXRef.current === null
+    ) {
       setIsInteracting(false);
       return;
     }
@@ -457,36 +727,47 @@ export default function LeisureEntertainment() {
 
       {/* MOBILE DAN TABLET */}
       <div className="flex flex-col lg:hidden">
-        {LEISURE_IMAGES.map((item, index) => (
-          <div
-            key={`mobile-${item.id}`}
-            className="w-full"
-          >
-            <img
-              src={item.image}
-              alt={item.alt}
-              width={POSTER_WIDTH}
-              height={POSTER_HEIGHT}
-              loading={
-                index === 0
-                  ? "eager"
-                  : "lazy"
-              }
-              decoding="async"
-              fetchPriority={
-                index === 0
-                  ? "high"
-                  : "low"
-              }
-              className="
-                block
-                w-full
-                h-auto
-                object-cover
-              "
-            />
-          </div>
-        ))}
+        {LEISURE_IMAGES.map(
+          (item, index) => (
+            <div
+              key={`mobile-${item.id}`}
+              className="w-full"
+            >
+              <img
+                src={item.image}
+                alt={item.alt}
+                width={POSTER_WIDTH}
+                height={POSTER_HEIGHT}
+                loading={
+                  index === 0
+                    ? "eager"
+                    : "lazy"
+                }
+                decoding="async"
+                fetchPriority={
+                  index === 0
+                    ? "high"
+                    : "low"
+                }
+                /*
+                 * Setelah gambar pertama siap,
+                 * hitung ulang timer auto-scroll.
+                 */
+                onLoad={
+                  index === 0
+                    ? scheduleMobileAutoScroll
+                    : undefined
+                }
+                className="
+                  block
+                  w-full
+                  h-auto
+                  object-cover
+                "
+              />
+            </div>
+          )
+        )}
       </div>
 
       {/* LAPTOP DAN DESKTOP */}
@@ -513,12 +794,16 @@ export default function LeisureEntertainment() {
         }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerCancel}
+        onPointerCancel={
+          handlePointerCancel
+        }
       >
         {/* INFINITE BUFFER TRACK */}
         <div
           ref={trackRef}
-          onTransitionEnd={handleTransitionEnd}
+          onTransitionEnd={
+            handleTransitionEnd
+          }
           className="
             flex
             h-full
@@ -526,11 +811,6 @@ export default function LeisureEntertainment() {
             will-change-transform
           "
           style={{
-            /*
-             * Sebelum posisi dan semua file siap,
-             * track tidak ditampilkan. Ini mencegah
-             * kilatan gambar set buffer pertama.
-             */
             opacity: trackIsReady ? 1 : 0,
 
             transform: slideDistance
@@ -546,56 +826,60 @@ export default function LeisureEntertainment() {
 
             willChange: "transform",
             backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
+            WebkitBackfaceVisibility:
+              "hidden",
           }}
         >
-          {LOOP_ITEMS.map((item, index) => (
-            <div
-              key={item.key}
-              data-leisure-slide
-              className="
-                h-full
-                shrink-0
-                overflow-hidden
-                bg-[#17100c]
-              "
-              style={{
-                aspectRatio: `${POSTER_WIDTH} / ${POSTER_HEIGHT}`,
-                flex: "0 0 auto",
-              }}
-            >
-              <img
-                src={item.image}
-                alt={item.alt}
-                width={POSTER_WIDTH}
-                height={POSTER_HEIGHT}
-                draggable="false"
-                loading="eager"
-                decoding="async"
-                fetchPriority={
-                  index >= START_INDEX &&
-                  index <
-                    START_INDEX + IMAGE_COUNT
-                    ? "high"
-                    : "auto"
-                }
-                onLoad={() =>
-                  markImageLoaded(item.id)
-                }
-                onError={() =>
-                  markImageLoaded(item.id)
-                }
+          {LOOP_ITEMS.map(
+            (item, index) => (
+              <div
+                key={item.key}
+                data-leisure-slide
                 className="
-                  block
                   h-full
-                  w-full
-                  object-contain
-                  select-none
-                  pointer-events-none
+                  shrink-0
+                  overflow-hidden
+                  bg-[#17100c]
                 "
-              />
-            </div>
-          ))}
+                style={{
+                  aspectRatio: `${POSTER_WIDTH} / ${POSTER_HEIGHT}`,
+                  flex: "0 0 auto",
+                }}
+              >
+                <img
+                  src={item.image}
+                  alt={item.alt}
+                  width={POSTER_WIDTH}
+                  height={POSTER_HEIGHT}
+                  draggable="false"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority={
+                    index >= START_INDEX &&
+                    index <
+                      START_INDEX +
+                        IMAGE_COUNT
+                      ? "high"
+                      : "auto"
+                  }
+                  onLoad={() =>
+                    markImageLoaded(item.id)
+                  }
+                  onError={() =>
+                    markImageLoaded(item.id)
+                  }
+                  className="
+                    block
+                    h-full
+                    w-full
+                    object-contain
+                    select-none
+                    pointer-events-none
+                  "
+                />
+              </div>
+            )
+          )}
         </div>
       </div>
     </div>
