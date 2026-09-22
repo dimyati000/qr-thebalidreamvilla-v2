@@ -51,12 +51,12 @@ export default function Compendium() {
             <div className="flex items-center gap-3 p-6">
               <button
                 onClick={() => navigate(-1)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 border border-white/40 text-white hover:bg-white/30 transition backdrop-blur-md"
+                className="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-white/20 border border-white/40 text-white hover:bg-white/30 transition backdrop-blur-md"
               >
                 <BackIcon />
               </button>
     
-              <h1 className="text-white text-xl tracking-[0.2em] font-medium drop-shadow-lg">
+              <h1 className="gallery-page-title text-white leading-tight tracking-[0.2em] font-medium drop-shadow-lg">
           IN-ROOM DINING
               </h1>
             </div>

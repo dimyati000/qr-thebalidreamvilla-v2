@@ -449,7 +449,7 @@ export default function GuestExperience() {
 
           <h1
             className="
-              text-lg
+              gallery-page-title
               font-light
               uppercase
               tracking-[0.2em]

@@ -33,20 +33,14 @@ export default function PromotionPage({ title, images = [] }) {
         </button>
 
         {/* TITLE */}
-        {/* <h1 
-    className="
-      text-white text-[13px] md:text-[14px]
-      tracking-[0.8px] leading-tight font-medium
-    "
-  > */}
-        <h3
+        <h1
           className="
-    text-white text-[8px] md:text-[px]
-    tracking-[0.8px] leading-none
+    gallery-page-title text-white
+    tracking-[0.8px] leading-tight font-medium
   "
         >
           {title}
-        </h3>
+        </h1>
       </div>
 
       {/* GALLERY */}

@@ -272,6 +272,7 @@ export default function LeisureEntertainment() {
               flex
               h-10
               w-10
+              shrink-0
               items-center
               justify-center
               rounded-full
@@ -289,7 +290,8 @@ export default function LeisureEntertainment() {
 
           <h1
             className="
-              text-lg
+              gallery-page-title
+              leading-tight
               font-light
               uppercase
               tracking-[0.2em]

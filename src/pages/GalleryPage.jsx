@@ -723,9 +723,8 @@ export default function GalleryPage({
 
         <h1
           className="
+            gallery-page-title
             text-white
-            text-[20px]
-            pt-[10px]
             font-medium
             tracking-[0.5px]
             leading-tight

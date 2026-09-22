@@ -209,6 +209,16 @@ h1 {
   }
 }
 
+h1.gallery-page-title {
+  margin: 0;
+  color: #fff;
+  font-size: 18px;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+}
+
 h2 {
   font-size: 28px;
   letter-spacing: 1px;
